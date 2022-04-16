@@ -1,0 +1,241 @@
+#include<iostream>
+#include<vector>
+
+using namespace std;
+
+class page{
+
+
+    public:
+        page(int,int);
+        int maxsize;
+        int remsize;
+        int pageid;
+        page* prev;
+        page* next;
+        int records;
+        int stadd;
+        vector<int> keys;
+        void insertp(int, int);
+        bool findp(int);
+        bool sizeavail(int);
+        void display();
+};
+
+page::page(int n, int pagen){
+    maxsize = n;
+    pageid = pagen;
+    remsize = n - 16;
+    prev = NULL;
+    next = NULL;
+    records = 0;
+    stadd = 0;
+}
+
+bool page::sizeavail(int x){
+    if(remsize >= x+4){
+        return 1;
+    }
+    return 0;
+}
+
+
+
+void page::insertp(int size, int key){
+    
+    keys.push_back(key);
+    remsize -= (size+4);
+    stadd += size;
+    records++;
+
+}
+
+
+bool page::findp(int key){
+    
+    for(int i = 0; i < keys.size(); i++){
+        if( keys[i] == key){
+            cout<<pageid<<" "<<i<<"\n";
+            return true;
+        }
+    }
+    return false;
+
+}
+
+
+///*************************************************************//
+
+
+class heap{
+
+    public:
+        heap(int);
+        int sizeofpage;
+        page* start;
+        page* curr;
+        page* newpage;
+        int tot;
+        void inserth(int size, int key);
+        void display();
+        bool findh(int);
+};
+
+
+
+heap::heap(int n){
+    start = NULL;
+    sizeofpage = n;
+    tot = 0;
+
+}
+
+
+
+void heap::inserth(int size, int key){
+
+    if(start == NULL){
+        start = new page(sizeofpage, 0);
+        tot++;
+        start->insertp(size,key);
+        return;
+    }
+
+    curr = new page(sizeofpage,0);
+    curr = start;
+
+    while(1){
+
+        if((curr->sizeavail(size))){
+            curr->insertp(size, key);
+            return;
+        }
+
+        else if(curr->next != NULL){
+            curr = curr->next;
+        }
+        else{
+            break;
+        }
+
+
+    }
+    
+    newpage = new page(sizeofpage, (curr->pageid)+1);
+
+    curr->next = newpage;
+    tot++;
+    newpage->prev = curr;
+
+    newpage->insertp(size, key);
+    return;
+
+}
+
+bool heap::findh(int x){
+
+    curr = new page(sizeofpage, 0);
+    curr=start;
+
+    while(curr != NULL){
+        
+        if( curr->findp(x) )
+            return 1;
+
+        curr = curr->next;
+    }
+    cout<<"-1 -1\n";
+
+    return 0;
+}
+
+
+
+void heap::display(){
+    
+    cout<<tot<<" ";
+
+    if(tot == 0)
+    {
+        cout<<endl;
+        return;
+    }
+
+
+    curr = new page(sizeofpage, 0);
+    curr=start;
+
+    while(curr != NULL){
+        cout<<curr->records<<" ";
+        curr = curr->next;
+    }
+    
+    cout<<endl;
+
+}
+
+
+int main(){
+
+
+    int s;
+    cin>>s;
+
+    heap ob(s);
+
+    int ins;
+    int si, ke;
+
+    
+    while(1){
+        cin>>ins;
+        if(ins == 1){
+            
+            cin>>si>>ke;
+            ob.inserth(si,ke);
+        }
+        else if(ins == 2){
+            ob.display();
+        }
+        else if(ins == 3){
+            int g ; cin>>g;
+            ob.findh(g);
+        }
+        else {
+            break;
+        }
+
+
+
+
+
+    }
+
+
+
+    // heap ob(100);
+    // ob.display();
+    // ob.inserth(20,5);
+    // ob.display();
+    // ob.findh(7);
+    // ob.inserth(25,12);
+    // ob.findh(12);
+    // ob.inserth(78,1001);
+    // ob.inserth(10,521);
+    // ob.display();
+    // cout<<ob.findh(7)<<endl;
+
+    // ob.inserth(25,12);
+    // cout<<ob.findh(12)<<endl;
+
+    // ob.inserth(78,1001);
+    // ob.inserth(10,521);
+
+    // ob.display();
+    //  cout<<ob.findh(1001)<<endl;
+    
+
+
+
+    return 0;
+}
